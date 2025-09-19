@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema Escolar EPET Nº6</title>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #panel { margin-top: 30px; }
+  </style>
+</head>
+<body>
+
+  <h1>Bienvenido al Sistema Escolar</h1>
+  <button onclick="loginConGoogle()">Ingresar con Google</button>
+
+  <div id="panel"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_PROYECTO.firebaseapp.com",
+      projectId: "TU_PROYECTO",
+      appId: "TU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    function loginConGoogle() {
+      signInWithPopup(auth, provider)
+        .then(result => {
+          const correo = result.user.email;
+          fetch(`https://script.google.com/macros/s/TU_URL_DE_SCRIPT/exec?correo=${correo}`)
+            .then(res => res.json())
+            .then(data => {
+              document.getElementById("panel").innerHTML = `
+                <h2>Hola, ${data.nombre}</h2>
+                <p>Rol: ${data.rol}</p>
+                <p>Materias: ${data.materias || "—"}</p>
+              `;
+            });
+        })
+        .catch(error => {
+          console.error("Error al iniciar sesión:", error);
+        });
+    }
+  </script>
+
+</body>
+</html>
